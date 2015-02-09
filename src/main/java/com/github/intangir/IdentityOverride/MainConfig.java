@@ -23,6 +23,12 @@ public class MainConfig extends Config {
 	@Comment("Notify person that their name is overridden")
 	private boolean notify;
 
+	@Comment("Link url given with notify")
+	private String link;
+
+	@Comment("Link name given with notify")
+	private String linkName;
+
 	@Comment("List of commands")
 	private Map<String, String> commands;
 
@@ -31,6 +37,9 @@ public class MainConfig extends Config {
 		
 		commands = new HashMap<String, String>();
 		commands.put("name", "overridename rename changename");
+		
+		linkName = "";
+		link = "";
 	}
 	
 	@Override

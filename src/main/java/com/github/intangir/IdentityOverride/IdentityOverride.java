@@ -72,17 +72,21 @@ public class IdentityOverride extends Plugin implements Listener
     			debug("Overriding Name for " + player.getUniqueId() +  " from " + player.getName() + " to " + overridename);
     			if(config.isNotify()) {
     				player.sendMessage(ChatColor.YELLOW + "Overriding Name to " + overridename + ".");
-    				TextComponent notice = new TextComponent("If you want to change it, goto the ");
-    				notice.setColor(ChatColor.YELLOW);
     				
-		    		TextComponent link = new TextComponent("Name Change thread");
-		    		link.setClickEvent(new ClickEvent( ClickEvent.Action.OPEN_URL, "http://intangir.org/mc/name"));
-		    		link.setColor(ChatColor.LIGHT_PURPLE);
-		    		link.setUnderlined(true);
-		    		notice.addExtra(link);
-		    		player.sendMessage(notice);
+    				if(!config.getLinkName().isEmpty() && !config.getLink().isEmpty())
+    				{
+	    				TextComponent notice = new TextComponent("If you want to change it, goto ");
+	    				notice.setColor(ChatColor.YELLOW);
+	    				
+			    		TextComponent link = new TextComponent(config.getLinkName());
+			    		link.setClickEvent(new ClickEvent( ClickEvent.Action.OPEN_URL, config.getLink()));
+			    		link.setColor(ChatColor.LIGHT_PURPLE);
+			    		link.setUnderlined(true);
+			    		notice.addExtra(link);
+			    		player.sendMessage(notice);
+    				}
     			}
-	  		
+
 	    		UserConnection conn = (UserConnection) player;
 	    		try {
 					nameField.set(conn, overridename);
