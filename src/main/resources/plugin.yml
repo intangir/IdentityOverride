@@ -1,0 +1,5 @@
+name: IdentityOverride
+main: com.github.intangir.IdentityOverride.IdentityOverride
+version: ${version}
+author: Intangir
+depends: [Yamler]
