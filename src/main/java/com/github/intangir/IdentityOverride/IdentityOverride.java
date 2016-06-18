@@ -17,6 +17,7 @@ import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.connection.InitialHandler;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
+import net.md_5.bungee.BungeeCord;
 import lombok.Getter;
 
 public class IdentityOverride extends Plugin implements Listener
@@ -44,6 +45,7 @@ public class IdentityOverride extends Plugin implements Listener
 
         // allow overriding name completely
         try {
+        	// override name field
         	nameField = UserConnection.class.getDeclaredField("name");
         	nameField.setAccessible(true);
 		} catch (Exception e) {
@@ -64,11 +66,12 @@ public class IdentityOverride extends Plugin implements Listener
     	ProxiedPlayer player = e.getPlayer();
     	String overridename = names.get(player.getUniqueId().toString());
     	
+    	// check if there is an override for this name
     	debug("checking for override for " + player.getUniqueId().toString());
     	if(overridename != null) {
     		if(!player.getName().equals(overridename)) {
     		
-    			
+    			// make all of the proper notifications
     			debug("Overriding Name for " + player.getUniqueId() +  " from " + player.getName() + " to " + overridename);
     			if(config.isNotify()) {
     				player.sendMessage(ChatColor.YELLOW + "Overriding Name to " + overridename + ".");
@@ -87,17 +90,27 @@ public class IdentityOverride extends Plugin implements Listener
     				}
     			}
 
-	    		UserConnection conn = (UserConnection) player;
+    			// this event is called after already being added to connections collection
+    			// we have to remove it from the connections collection before we change the name
+    			UserConnection conn = (UserConnection) player;
+    			((BungeeCord) getProxy()).removeConnection(conn);
+	    		
+    			// change the name in the connection object
 	    		try {
 					nameField.set(conn, overridename);
 	    		} catch (Exception ex) {
 	    			log.severe("Error setting on name field");
 	    			ex.printStackTrace();
 	    		}
-	
+	    		
+	    		// now that is has the proper name, readd it to the connections collection    		
+	    		((BungeeCord) getProxy()).addConnection(conn);
+
+	    		// update the initialhandler object just incase
 	    		InitialHandler handler = (InitialHandler) player.getPendingConnection();
 	    		handler.getLoginRequest().setData(overridename);
-	
+	    		
+	    		// lastly, set the display name for the player
 	    		player.setDisplayName(overridename);
     		}
 
@@ -108,5 +121,5 @@ public class IdentityOverride extends Plugin implements Listener
     	}
     	
     }
-
+   
 }
